@@ -173,32 +173,35 @@ void checkInput(scheduleList *S){
     rewind(stdin);
 }
 
-void imprime(schedule *S){
-    transaction aux;
-        for (int i = 0; i < S->totalT; i++){
-            aux= S->graph[i];
-            for (int j = 0; j <aux.n; j++){
-                printf("T%d STATUS=%d\n",aux.adj[j].name,aux.adj[j].status);
-                // printf("T%d -> T%d\n",aux.name,aux.adj[j].name);
+void output(scheduleList *S){
+    schedule *aux;
+    aux=S->first;
+    while (aux){
+        printf("%d ",aux->name);
+        for (int i = 0; i < aux->totalT; i++){
+            if(i==aux->totalT-1){
+                printf("%d ",aux->graph[i].name);
+            }else{
+                printf("%d,",aux->graph[i].name);
             }
         }
+        if(!detectCycle(aux)){
+            printf("SS\n");
+        }else{
+            printf("NS\n");
+        }
+        aux=aux->next;
+    }
+    
 }
 int main(int argc, char const *argv[]){
     char line[1024];
     scheduleList S;
-    schedule aux;
     S.total=0;
     checkInput(&S);
     updateSchedule(&S);
-    aux=S.first;
-    // while(aux!=NULL){
-    //     buildEdges(aux);
-    //     if(!detectCycle(S.first)){
-    //         printf("SEM CICLO\n");
-    //     }else{
-    //         printf("COM CICLO\n");
-    //     }
-    // }
-
+    buildEdges(S.first);
+    buildEdges(S.last);
+    output(&S);
     return 0;
 }
