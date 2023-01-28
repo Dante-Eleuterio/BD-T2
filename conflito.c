@@ -1,30 +1,15 @@
 #include "conflito.h"
-// aux=S->first;
-    // for (int i = 0; i < aux->totalOps; i++){
-    //     printf("time = %d, T = %d type = %c, var = %c \n",aux->ops[i].time,aux->ops[i].T->name, aux->ops[i].type, aux->ops[i].var);
-    // }
-    // printf("SCHEDULE 2\n");
-    // aux=aux->next;
-    // for (int i = 0; i < aux->totalOps; i++){
-    //     printf("time = %d, T = %d type = %c, var = %c \n",aux->ops[i].time,aux->ops[i].T->name, aux->ops[i].type, aux->ops[i].var);
-    // }
-    // printf("var i = %c, var j = %c, name i = %d, name j = %d\n",S->ops[i].var,S->ops[j].var,S->ops[i].T->name,S->ops[j].T->name);
-
-// transaction aux;
-//     for (int i = 0; i < S->totalT; i++){
-//         aux= S->graph[i];
-//         for (int j = 0; j <aux.n; j++){
-//             printf("T%d -> T%d\n",aux.name,aux.adj[j].name);
-//         }
-//     }
 
 int DepthSearch(transaction *T){
     T->status=VISITED;
     for (int i = 0; i < T->n; i++){
+        // printf("%d ",T->adj[i].status);
         if(T->adj[i].status==INITIAL){
-            return(DepthSearch(&(T->adj[i])));
+            if(!DepthSearch(&(T->adj[i]))){
+                return 0;
+            }
         }
-        if(T->adj[i].status!=INITIAL){
+        if(T->adj[i].status==VISITED){
             return 0;
         }
     }
@@ -42,45 +27,43 @@ int detectCycle(schedule *S){
     return 0;
 }
 
+
 void buildEdges(schedule *S){
-    void *temp;
-    for (int i = 0; i < S->totalOps; i++){
-        switch (S->ops[i].type){
-            case 'W':
-                for (int j = i+1; j < S->totalOps; j++){
-                    if(S->ops[j].type=='R'){
-                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)) {
+    for (int i = 0; i <=S->totalOps; i++){
+        for (int j = i+1; j <=S->totalOps; j++){
+            if( (S->ops[i].type == 'W' && S->ops[j].type=='R') ||
+                (S->ops[i].type == 'R' && S->ops[j].type=='W') ||
+                (S->ops[i].type == 'W' && S->ops[j].type=='W')){
+                    if((S->ops[i].var == S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)) {
                             S->ops[i].T->n++;
-                            temp=realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
-                            S->ops[i].T->adj=temp;
-                            S->ops[i].T->adj[S->ops[i].T->n-1]=*(S->ops[j].T);
-                        }
-                    }else{
-                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)){
-                            S->ops[i].T->n++;
-                            temp=realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
-                            S->ops[i].T->adj=temp;
-                            S->ops[i].T->adj[S->ops[i].T->n-1]=*(S->ops[j].T);
-                        }
-                    }
+                    }    
                 }
-                break;
-            case 'R':
-                for (int j = i+1; j < S->totalOps; j++){
-                    if(S->ops[j].type=='W'){
-                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)){
-                            S->ops[i].T->n++;
-                            temp=realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
-                            S->ops[i].T->adj=temp;
-                            S->ops[i].T->adj[S->ops[i].T->n-1]=*(S->ops[j].T);
-                        }
-                    }
-                }                
-                break;        
-            default:
-                break;
         }
     }
+    for (int i = 0; i < S->totalT; i++){
+        S->graph[i].adj = malloc(S->graph[i].n * sizeof(transaction));
+    }
+    for (int i = 0; i <=S->totalOps; i++){
+        for (int j = i+1; j <=S->totalOps; j++){
+            if( (S->ops[i].type == 'W' && S->ops[j].type=='R') ||
+                (S->ops[i].type == 'R' && S->ops[j].type=='W') ||
+                (S->ops[i].type == 'W' && S->ops[j].type=='W')){
+                    if((S->ops[i].var == S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)) {
+                            S->ops[i].T->adj[S->ops[i].T->count]=*(S->ops[j].T);
+                            S->ops[i].T->count++;
+                    }    
+                }
+        }
+    }
+}
+
+void edges(scheduleList *S){
+    schedule *aux = S->first;
+    while(aux){
+        buildEdges(aux);
+        aux=aux->next;
+    }
+    
 }
 
 void updateSchedule(scheduleList *S){
@@ -104,6 +87,7 @@ void updateSchedule(scheduleList *S){
         }else{
             aux->graph[T-aux->firstT].name=T;
             aux->graph[T-aux->firstT].n=0;
+            aux->graph[T-aux->firstT].count=0;
             aux->graph[T-aux->firstT].status=INITIAL;
             aux->ops[totalOps].time=time;
             aux->ops[totalOps].type=type;
@@ -193,15 +177,4 @@ void output(scheduleList *S){
         aux=aux->next;
     }
     
-}
-int main(int argc, char const *argv[]){
-    char line[1024];
-    scheduleList S;
-    S.total=0;
-    checkInput(&S);
-    updateSchedule(&S);
-    buildEdges(S.first);
-    buildEdges(S.last);
-    output(&S);
-    return 0;
 }

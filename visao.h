@@ -30,15 +30,6 @@ typedef struct operations{
 typedef struct transaction{
     int name; //Id da transaction
     int n; //Vizinhança
-    int count;
     int status; //Para o algoritmo de ciclo em grafo
     struct transaction *adj; //Arestas do nodo
 }transaction;
-
-int DepthSearch(transaction *T);
-int detectCycle(schedule *S);
-void edges(scheduleList *S);
-void buildEdges(schedule *S);
-void updateSchedule(scheduleList *S);
-void checkInput(scheduleList *S);
-void output(scheduleList *S);
