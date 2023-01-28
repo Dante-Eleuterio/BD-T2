@@ -24,7 +24,7 @@ int DepthSearch(transaction *T){
         if(T->adj[i].status==INITIAL){
             return(DepthSearch(&(T->adj[i])));
         }
-        if(T->adj[i].status==VISITED){
+        if(T->adj[i].status!=INITIAL){
             return 0;
         }
     }
@@ -186,15 +186,19 @@ void imprime(schedule *S){
 int main(int argc, char const *argv[]){
     char line[1024];
     scheduleList S;
+    schedule aux;
     S.total=0;
     checkInput(&S);
     updateSchedule(&S);
-    buildEdges(S.first);
-    if(!detectCycle(S.first)){
-        printf("SEM CICLO\n");
-    }else{
-        printf("COM CICLO\n");
-    }
-    imprime(S.first);
+    aux=S.first;
+    // while(aux!=NULL){
+    //     buildEdges(aux);
+    //     if(!detectCycle(S.first)){
+    //         printf("SEM CICLO\n");
+    //     }else{
+    //         printf("COM CICLO\n");
+    //     }
+    // }
+
     return 0;
 }
