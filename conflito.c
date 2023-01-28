@@ -1,5 +1,4 @@
 #include "conflito.h"
-
 // aux=S->first;
     // for (int i = 0; i < aux->totalOps; i++){
     //     printf("time = %d, T = %d type = %c, var = %c \n",aux->ops[i].time,aux->ops[i].T->name, aux->ops[i].type, aux->ops[i].var);
@@ -10,7 +9,41 @@
     //     printf("time = %d, T = %d type = %c, var = %c \n",aux->ops[i].time,aux->ops[i].T->name, aux->ops[i].type, aux->ops[i].var);
     // }
     // printf("var i = %c, var j = %c, name i = %d, name j = %d\n",S->ops[i].var,S->ops[j].var,S->ops[i].T->name,S->ops[j].T->name);
+
+// transaction aux;
+//     for (int i = 0; i < S->totalT; i++){
+//         aux= S->graph[i];
+//         for (int j = 0; j <aux.n; j++){
+//             printf("T%d -> T%d\n",aux.name,aux.adj[j].name);
+//         }
+//     }
+
+int DepthSearch(transaction *T){
+    T->status=VISITED;
+    for (int i = 0; i < T->n; i++){
+        if(T->adj[i].status==INITIAL){
+            return(DepthSearch(&(T->adj[i])));
+        }
+        if(T->adj[i].status==VISITED){
+            return 0;
+        }
+    }
+    T->status=FINISHED;
+    return 1;
+}
+
+int detectCycle(schedule *S){
+    for (int i = 0; i < S->totalT; i++){
+        if(S->graph[i].status==INITIAL){
+            if(!DepthSearch(&(S->graph[i])))
+                return 1;
+        }
+    }
+    return 0;
+}
+
 void buildEdges(schedule *S){
+    void *temp;
     for (int i = 0; i < S->totalOps; i++){
         switch (S->ops[i].type){
             case 'W':
@@ -18,36 +51,36 @@ void buildEdges(schedule *S){
                     if(S->ops[j].type=='R'){
                         if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)) {
                             S->ops[i].T->n++;
-                            realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
+                            temp=realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
+                            S->ops[i].T->adj=temp;
+                            S->ops[i].T->adj[S->ops[i].T->n-1]=*(S->ops[j].T);
                         }
-
                     }else{
-                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)) 
-                            S->graph[S->ops[i].T->name - S->firstT] = *(S->ops[j].T);
+                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)){
+                            S->ops[i].T->n++;
+                            temp=realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
+                            S->ops[i].T->adj=temp;
+                            S->ops[i].T->adj[S->ops[i].T->n-1]=*(S->ops[j].T);
+                        }
                     }
                 }
                 break;
             case 'R':
                 for (int j = i+1; j < S->totalOps; j++){
-                    if(S->ops[j].type=='W')
-                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)) 
-                            S->graph[S->ops[i].T->name - S->firstT] = *(S->ops[j].T);
+                    if(S->ops[j].type=='W'){
+                        if((S->ops[i].var== S->ops[j].var) && (S->ops[i].T->name != S->ops[j].T->name)){
+                            S->ops[i].T->n++;
+                            temp=realloc(S->ops[i].T->adj,S->ops[i].T->n * sizeof(transaction));
+                            S->ops[i].T->adj=temp;
+                            S->ops[i].T->adj[S->ops[i].T->n-1]=*(S->ops[j].T);
+                        }
+                    }
                 }                
                 break;        
             default:
                 break;
         }
     }
-    for (int i = 0; i < S->totalT; i++){
-        while ()
-        {
-            /* code */
-        }
-        
-        printf("Aresta de T%d para T%d",)
-    }
-    
-    
 }
 
 void updateSchedule(scheduleList *S){
@@ -71,6 +104,7 @@ void updateSchedule(scheduleList *S){
         }else{
             aux->graph[T-aux->firstT].name=T;
             aux->graph[T-aux->firstT].n=0;
+            aux->graph[T-aux->firstT].status=INITIAL;
             aux->ops[totalOps].time=time;
             aux->ops[totalOps].type=type;
             aux->ops[totalOps].var=var;
@@ -139,17 +173,28 @@ void checkInput(scheduleList *S){
     rewind(stdin);
 }
 
+void imprime(schedule *S){
+    transaction aux;
+        for (int i = 0; i < S->totalT; i++){
+            aux= S->graph[i];
+            for (int j = 0; j <aux.n; j++){
+                printf("T%d STATUS=%d\n",aux.adj[j].name,aux.adj[j].status);
+                // printf("T%d -> T%d\n",aux.name,aux.adj[j].name);
+            }
+        }
+}
 int main(int argc, char const *argv[]){
     char line[1024];
     scheduleList S;
     S.total=0;
-    int time;
-    int transaction;
-    char type;
-    char var;
     checkInput(&S);
     updateSchedule(&S);
     buildEdges(S.first);
-    
+    if(!detectCycle(S.first)){
+        printf("SEM CICLO\n");
+    }else{
+        printf("COM CICLO\n");
+    }
+    imprime(S.first);
     return 0;
 }

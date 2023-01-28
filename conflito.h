@@ -1,5 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
+#define INITIAL 0
+#define VISITED 1
+#define FINISHED 2
 
 typedef struct scheduleList{
     struct schedule *first; 
@@ -27,5 +30,6 @@ typedef struct operations{
 typedef struct transaction{
     int name; //Id da transaction
     int n; //Vizinhança
+    int status; //Para o algoritmo de ciclo em grafo
     struct transaction *adj; //Arestas do nodo
 }transaction;
