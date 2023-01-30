@@ -14,6 +14,5 @@ int main(int argc, char const *argv[]){
     checkInputVision(&S);
     updateScheduleVisao(&S);
     buildPermuts(&S);
-    // imprime(S.first);
     return 0;
 }

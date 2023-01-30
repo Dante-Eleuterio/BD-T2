@@ -3,7 +3,6 @@
 int DepthSearch(transaction *T){
     T->status=VISITED;
     for (int i = 0; i < T->n; i++){
-        // printf("%d ",T->adj[i].status);
         if(T->adj[i].status==INITIAL){
             if(!DepthSearch(&(T->adj[i]))){
                 return 0;

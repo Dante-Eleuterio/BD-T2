@@ -1,14 +1,20 @@
 #include "visao.h"
+        // for (int i = 0; i < aux->validPermuts; i++){
+        //     for (int j = 0; j < aux->totalT; j++){
+        //         printf(" %d |",aux->Permuts[i].transactions[j].name);
+        //     }
+        //     printf("\n");
+        // }
 
-void imprime(scheduleV *S){
-    for (int i = 0; i <S->totalT; i++){
-        printf("T%d: ",S->transactions[i].name);
-        for (int j = 0; j < S->transactions[i].totalOps; j++){
-            printf("%d %c %c\n",S->transactions[i].ops[j].time,S->transactions[i].ops[j].type,S->transactions[i].ops[j].var);
-        }
-    }
+// void imprime(scheduleV *S){
+//     for (int i = 0; i <S->totalT; i++){
+//         printf("T%d: ",S->transactions[i].name);
+//         for (int j = 0; j < S->transactions[i].totalOps; j++){
+//             printf("%d %c %c\n",S->transactions[i].ops[j].time,S->transactions[i].ops[j].type,S->transactions[i].ops[j].var);
+//         }
+//     }
         
-}
+// }
 
 int fatorial(int x){
     int aux =1;
@@ -25,27 +31,19 @@ void swap(transactionV *a,transactionV *b){
     *b = temp;
 }
 
-void teste(int *x){
-    int aux= *x;
-    printf("%d\n",*x);
-    if(aux<3){
-        *x = *x+1;
-        teste(x);
-    }
-}
-
 void permutation(scheduleV *S,transactionV *arr,int *counter, int start, int end){
     if(start==end){
-        transactionV T[aux->totalT];
-        for (int i = 0; i < aux->totalT; i++){
-            T[i] = aux->transactions[i];
-        }
+        S->Permuts[*counter].name=*counter;
         S->Permuts[*counter].totalOps=S->totalOps;
         S->Permuts[*counter].totalT = S->totalT;
         S->Permuts[*counter].firstT = S->firstT;
         S->Permuts[*counter].ops = S->ops;
         S->Permuts[*counter].valid=1;
-        *counter++;
+        S->Permuts[*counter].transactions = malloc(S->totalT * sizeof(transactionV));
+        for (int i = 0; i < S->totalT; i++){
+            S->Permuts[*counter].transactions[i] = arr[i];
+        }
+        *counter +=1;
         return;
     }
     int i;
@@ -66,19 +64,14 @@ void buildPermuts(scheduleListV *S){
         aux=aux->next;        
     }
     aux=S->first;
-    int a=0;
-    teste(&a);
-    printf("%d\n",a);
-
     while (aux){
         int a=0;
         transactionV T[aux->totalT];
         for (int i = 0; i < aux->totalT; i++){
             T[i] = aux->transactions[i];
         }
-        permutation(aux,T,&a,0,aux->validPermuts-1);
+        permutation(aux,T,&a,0,aux->totalT-1);
         aux=aux->next;        
-    
     }
 }
 
