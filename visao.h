@@ -4,32 +4,40 @@
 #define VISITED 1
 #define FINISHED 2
 
-typedef struct scheduleList{
-    struct schedule *first; 
-    struct schedule *last;
+typedef struct scheduleListV{
+    struct scheduleV *first; 
+    struct scheduleV *last;
     int total; 
-}scheduleList;
+}scheduleListV;
 
-typedef struct schedule{
+typedef struct scheduleV{
     int name; //ID do Schedule
     int firstT; //ID da primeira Transaction
     int totalT; //Total de Transactions
     int totalOps; //Total de operações
-    struct transaction *graph; //Lista de vértices do grafo
-    struct operations *ops; //Lista de operações
-    struct schedule *next; //Ponteiro pro proximo schedule
-}schedule;
+    int valid;  //Se já morreu
+    int validPermuts;
+    struct transactionV *transactions; //Lista de transactions
+    struct operationsV *ops; //Lista de operações
+    struct scheduleV *next; //Ponteiro pro proximo schedule
+    struct scheduleListV *Permuts; //Ponteiro pruma lista de permutações
+}scheduleV;
 
-typedef struct operations{
-    struct transaction *T; //Ponteiro pra Transaction referenciada
+typedef struct operationsV{
+    struct transactionV *T; //Ponteiro pra Transaction referenciada
     int time; //Tempo lógico da Op
     char type; //Tipo da op (R,W)
     char var; //Variavel referenciada
-}operations;
+}operationsV;
 
-typedef struct transaction{
+typedef struct transactionV{
     int name; //Id da transaction
-    int n; //Vizinhança
-    int status; //Para o algoritmo de ciclo em grafo
-    struct transaction *adj; //Arestas do nodo
-}transaction;
+    int totalOps; //Total de operações
+    int counter;
+    struct operationsV *ops; //Lista de operações
+}transactionV;
+
+void updateScheduleVisao(scheduleListV *S);
+void checkInputVision(scheduleListV *S);
+void imprime(scheduleV *S);
+int fatorial(int x);

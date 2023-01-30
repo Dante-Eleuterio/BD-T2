@@ -101,7 +101,7 @@ void updateSchedule(scheduleList *S){
             totalOps=0;
         }
     }
-    
+    rewind(stdin);
 }
 
 void checkInput(scheduleList *S){
