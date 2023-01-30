@@ -34,6 +34,7 @@ typedef struct transactionV{
     int name; //Id da transaction
     int totalOps; //Total de operações
     int counter;
+    int index;
     struct operationsV *ops; //Lista de operações
 }transactionV;
 

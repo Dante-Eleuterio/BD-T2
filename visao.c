@@ -16,6 +16,26 @@
         
 // }
 
+// for (int i = 0; i <aux->totalOps; i++){
+//             for (int j = i+1; j <aux->totalOps; j++){
+//                 if(aux->ops[i].type == 'W' && aux->ops[j].type=='R'){
+//                     if((aux->ops[i].var == aux->ops[j].var) && (aux->ops[i].T->name != aux->ops[j].T->name)) {
+//                         for (int k = 0; k< aux->validPermuts; k++){
+//                             for (int m = 0; m < aux->totalT; m++){
+//                                 if(aux->Permuts[k].valid){
+//                                     if(aux->Permuts[k].transactions[m].name==aux->ops[i].T->name){
+//                                         if(aux->Permuts[k].transactions[m].index){
+
+//                                         }
+//                                     }
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+
 int fatorial(int x){
     int aux =1;
     for (int i = 1; i <=x; i++){
@@ -31,6 +51,62 @@ void swap(transactionV *a,transactionV *b){
     *b = temp;
 }
 
+void checkPermut(scheduleV *S,operationsV op1,operationsV op2){
+    int index1,index2;
+    for (int i = 0; i < S->validPermuts; i++){
+        for (int j = 0; j < S->totalT; j++){
+            if(S->Permuts[i].valid){
+                if(S->Permuts[i].transactions[j].name==op1.T->name){
+                    index1=S->Permuts[i].transactions[j].index;
+                }
+                if(S->Permuts[i].transactions[j].name==op2.T->name){
+                    index2=S->Permuts[i].transactions[j].index;
+                }
+            }
+        }
+        if(index1>index2){
+            printf("MORREU\n");
+            S->Permuts[i].valid=0;
+            index1=0;
+            index2=0;
+        }
+    }
+    // for (int k = 0; k< aux->validPermuts; k++){
+    //                 for (int m = 0; m < aux->totalT; m++){
+    //                     if(aux->Permuts[k].valid){
+    //                         if(aux->Permuts[k].transactions[m].name==aux->ops[i].T->name){
+    //                             if(aux->Permuts[k].transactions[m].index){
+
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+            
+
+}
+
+
+int checkVision(scheduleListV *S){
+    scheduleV *aux=S->first;
+    
+        aux=aux->next;
+
+    // while (aux){
+        for (int i = 0; i <aux->totalOps; i++){
+            for (int j = i+1; j <aux->totalOps; j++){
+                if(aux->ops[i].type == 'W' && aux->ops[j].type=='R'){
+                    if((aux->ops[i].var == aux->ops[j].var) && (aux->ops[i].T->name != aux->ops[j].T->name)) {
+                        checkPermut(aux, aux->ops[i],aux->ops[j]);
+                    }
+                }
+            }
+        }
+        aux=aux->next;
+    // }
+}
+
+
 void permutation(scheduleV *S,transactionV *arr,int *counter, int start, int end){
     if(start==end){
         S->Permuts[*counter].name=*counter;
@@ -41,8 +117,12 @@ void permutation(scheduleV *S,transactionV *arr,int *counter, int start, int end
         S->Permuts[*counter].valid=1;
         S->Permuts[*counter].transactions = malloc(S->totalT * sizeof(transactionV));
         for (int i = 0; i < S->totalT; i++){
+            arr[i].index=i;
+        }
+        for (int i = 0; i < S->totalT; i++){
             S->Permuts[*counter].transactions[i] = arr[i];
         }
+       
         *counter +=1;
         return;
     }
@@ -73,6 +153,7 @@ void buildPermuts(scheduleListV *S){
         permutation(aux,T,&a,0,aux->totalT-1);
         aux=aux->next;        
     }
+    checkVision(S);
 }
 
 
