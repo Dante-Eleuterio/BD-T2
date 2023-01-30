@@ -13,6 +13,7 @@ int main(int argc, char const *argv[]){
     S.total=0;
     checkInputVision(&S);
     updateScheduleVisao(&S);
+    buildPermuts(&S);
     // imprime(S.first);
     return 0;
 }

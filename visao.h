@@ -20,7 +20,7 @@ typedef struct scheduleV{
     struct transactionV *transactions; //Lista de transactions
     struct operationsV *ops; //Lista de operações
     struct scheduleV *next; //Ponteiro pro proximo schedule
-    struct scheduleListV *Permuts; //Ponteiro pruma lista de permutações
+    struct scheduleV *Permuts; //Ponteiro pruma lista de permutações
 }scheduleV;
 
 typedef struct operationsV{
@@ -41,3 +41,4 @@ void updateScheduleVisao(scheduleListV *S);
 void checkInputVision(scheduleListV *S);
 void imprime(scheduleV *S);
 int fatorial(int x);
+void buildPermuts(scheduleListV *S);

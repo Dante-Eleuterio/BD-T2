@@ -18,17 +18,68 @@ int fatorial(int x){
     return aux;
 }
 
+void swap(transactionV *a,transactionV *b){
+    transactionV temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void teste(int *x){
+    int aux= *x;
+    printf("%d\n",*x);
+    if(aux<3){
+        *x = *x+1;
+        teste(x);
+    }
+}
+
+void permutation(scheduleV *S,transactionV *arr,int *counter, int start, int end){
+    if(start==end){
+        transactionV T[aux->totalT];
+        for (int i = 0; i < aux->totalT; i++){
+            T[i] = aux->transactions[i];
+        }
+        S->Permuts[*counter].totalOps=S->totalOps;
+        S->Permuts[*counter].totalT = S->totalT;
+        S->Permuts[*counter].firstT = S->firstT;
+        S->Permuts[*counter].ops = S->ops;
+        S->Permuts[*counter].valid=1;
+        *counter++;
+        return;
+    }
+    int i;
+    for(i=start;i<=end;i++){
+        swap((arr+i), (arr+start));
+        permutation(S,arr,counter, start+1, end);
+        swap((arr+i), (arr+start));
+    }
+}
+
 void buildPermuts(scheduleListV *S){
     scheduleV *aux= S->first;
     while (aux){
         for (int i = 0; i < aux->totalT; i++){
             aux->validPermuts=fatorial(aux->totalT);
-            aux->Permuts = malloc(fatorial(aux->totalT));
+            aux->Permuts = malloc(fatorial(aux->totalT) * sizeof(scheduleV));
         }
         aux=aux->next;        
     }
     aux=S->first;
-    //PERMUTAR AQUI
+    int a=0;
+    teste(&a);
+    printf("%d\n",a);
+
+    while (aux){
+        int a=0;
+        transactionV T[aux->totalT];
+        for (int i = 0; i < aux->totalT; i++){
+            T[i] = aux->transactions[i];
+        }
+        permutation(aux,T,&a,0,aux->validPermuts-1);
+        aux=aux->next;        
+    
+    }
 }
 
 
