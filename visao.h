@@ -40,4 +40,5 @@ typedef struct transactionV{
 
 void updateScheduleVisao(scheduleListV *S);
 void checkInputVision(scheduleListV *S);
+void imprime(scheduleV *S);
 void buildPermuts(scheduleListV *S);

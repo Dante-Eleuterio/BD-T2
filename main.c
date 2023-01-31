@@ -17,9 +17,9 @@ void output(scheduleList *S,scheduleListV *SV){
             }
         }
         if(!detectCycle(aux)){
-            printf("SS\n");
+            printf("SS ");
         }else{
-            printf("NS\n");
+            printf("NS ");
         }
         counter=0;
         for (int i = 0; i < auxV->validPermuts; i++){
@@ -28,16 +28,15 @@ void output(scheduleList *S,scheduleListV *SV){
             }
         }
         if(counter>0){
-            printf(" S%d deu boa\n",aux->name);
+            printf("SV\n");
         }else{
-            printf(" S%d foi de base\n",aux->name);
+            printf("NV\n");
         }
         aux=aux->next;
         auxV=auxV->next;
     }
 }
 int main(int argc, char const *argv[]){
-    printf("EAE");
     scheduleList S;
     S.total=0;
     checkInput(&S);

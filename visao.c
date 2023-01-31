@@ -128,7 +128,9 @@ int checkVision(scheduleListV *S){
                 }
             }
         }
+        aux=aux->next;
     }
+
 }
 
 
