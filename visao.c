@@ -84,7 +84,7 @@ void checkPermutRuleThree(scheduleV *S,int name,char var){
                     index=m;
                 }
             }
-            for (int j = 0; j < S->totalT; j++){
+            for (int j = index+1; j < S->totalT; j++){
                 for (int k = 0; k < S->Permuts[i].transactions[j].totalOps; k++){
                     if(S->Permuts[i].transactions[j].ops[k].type=='W' && S->Permuts[i].transactions[j].ops[k].var==var){
                         if(j>index){
@@ -101,7 +101,6 @@ int checkVision(scheduleListV *S){
     scheduleV *aux=S->first;
     
     int transaction=0;
-    int counter=0;
     char var;
     while (aux){
         for (int i = 0; i <aux->totalOps; i++){
@@ -129,20 +128,7 @@ int checkVision(scheduleListV *S){
                 }
             }
         }
-        counter=0;
-        for (int i = 0; i < aux->validPermuts; i++){
-            if(aux->Permuts[i].valid){
-                counter++;
-            }
-        }
-        if(counter>0)
-            printf("S%d deu boa\n",aux->name);
-        else
-            printf("S%d foi de base\n",aux->name);
-
-        aux=aux->next;
     }
-
 }
 
 
@@ -251,7 +237,6 @@ void updateScheduleVisao(scheduleListV *S){
 
 void checkInputVision(scheduleListV *S){
     scheduleV *aux;
-    aux->next=NULL;
     char line[1024];
     int totalOps=0;
     int time=0;

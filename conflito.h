@@ -41,4 +41,3 @@ void edges(scheduleList *S);
 void buildEdges(schedule *S);
 void updateSchedule(scheduleList *S);
 void checkInput(scheduleList *S);
-void output(scheduleList *S);

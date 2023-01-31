@@ -105,7 +105,6 @@ void updateSchedule(scheduleList *S){
 
 void checkInput(scheduleList *S){
     schedule *aux;
-    aux->next=NULL;
     char line[1024];
     int totalOps=0;
     int time=0;
@@ -156,24 +155,4 @@ void checkInput(scheduleList *S){
     rewind(stdin);
 }
 
-void output(scheduleList *S){
-    schedule *aux;
-    aux=S->first;
-    while (aux){
-        printf("%d ",aux->name);
-        for (int i = 0; i < aux->totalT; i++){
-            if(i==aux->totalT-1){
-                printf("%d ",aux->graph[i].name);
-            }else{
-                printf("%d,",aux->graph[i].name);
-            }
-        }
-        if(!detectCycle(aux)){
-            printf("SS\n");
-        }else{
-            printf("NS\n");
-        }
-        aux=aux->next;
-    }
-    
-}
+
