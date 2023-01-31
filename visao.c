@@ -51,7 +51,10 @@ void swap(transactionV *a,transactionV *b){
     *b = temp;
 }
 
-void checkPermut(scheduleV *S,operationsV op1,operationsV op2){
+
+
+
+void checkPermutRuleTwo(scheduleV *S,operationsV op1,operationsV op2){
     int index1,index2;
     for (int i = 0; i < S->validPermuts; i++){
         for (int j = 0; j < S->totalT; j++){
@@ -65,45 +68,81 @@ void checkPermut(scheduleV *S,operationsV op1,operationsV op2){
             }
         }
         if(index1>index2){
-            printf("MORREU\n");
             S->Permuts[i].valid=0;
             index1=0;
             index2=0;
         }
     }
-    // for (int k = 0; k< aux->validPermuts; k++){
-    //                 for (int m = 0; m < aux->totalT; m++){
-    //                     if(aux->Permuts[k].valid){
-    //                         if(aux->Permuts[k].transactions[m].name==aux->ops[i].T->name){
-    //                             if(aux->Permuts[k].transactions[m].index){
-
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-            
-
 }
 
-
-int checkVision(scheduleListV *S){
-    scheduleV *aux=S->first;
-    
-        aux=aux->next;
-
-    // while (aux){
-        for (int i = 0; i <aux->totalOps; i++){
-            for (int j = i+1; j <aux->totalOps; j++){
-                if(aux->ops[i].type == 'W' && aux->ops[j].type=='R'){
-                    if((aux->ops[i].var == aux->ops[j].var) && (aux->ops[i].T->name != aux->ops[j].T->name)) {
-                        checkPermut(aux, aux->ops[i],aux->ops[j]);
+void checkPermutRuleThree(scheduleV *S,int name,char var){
+    int index=0;
+    for (int i = 0; i < S->validPermuts; i++){
+        if(S->Permuts[i].valid){
+            for (int m = 0; m < S->totalT; m++){
+                if(S->Permuts[i].transactions[m].name==name){
+                    index=m;
+                }
+            }
+            for (int j = 0; j < S->totalT; j++){
+                for (int k = 0; k < S->Permuts[i].transactions[j].totalOps; k++){
+                    if(S->Permuts[i].transactions[j].ops[k].type=='W' && S->Permuts[i].transactions[j].ops[k].var==var){
+                        if(j>index){
+                            S->Permuts[i].valid=0;
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+int checkVision(scheduleListV *S){
+    scheduleV *aux=S->first;
+    
+    int transaction=0;
+    int counter=0;
+    char var;
+    while (aux){
+        for (int i = 0; i <aux->totalOps; i++){
+            if(aux->ops[i].type=='W'){
+                transaction=aux->ops[i].T->name;
+                var=aux->ops[i].var;
+            }
+            for (int j = i+1; j <aux->totalOps; j++){
+                if((aux->ops[i].type=='W' && aux->ops[j].type =='W') && (aux->ops[i].var == aux->ops[j].var)){
+                    transaction=aux->ops[j].T->name;
+                    var=aux->ops[j].var;
+                }
+            }
+            if(transaction!=0)
+                checkPermutRuleThree(aux,transaction,var);
+            transaction=0;
+        }
+        
+        for (int i = 0; i <aux->totalOps; i++){
+            for (int j = i+1; j <aux->totalOps; j++){
+                if(aux->ops[i].type == 'W' && aux->ops[j].type=='R'){
+                    if((aux->ops[i].var == aux->ops[j].var) && (aux->ops[i].T->name != aux->ops[j].T->name)) {
+                        checkPermutRuleTwo(aux, aux->ops[i],aux->ops[j]);
+                    }
+                }
+            }
+        }
+        counter=0;
+        for (int i = 0; i < aux->validPermuts; i++){
+            if(aux->Permuts[i].valid){
+                counter++;
+            }
+        }
+        if(counter>0)
+            printf("S%d deu boa\n",aux->name);
+        else
+            printf("S%d foi de base\n",aux->name);
+
         aux=aux->next;
-    // }
+    }
+
 }
 
 
