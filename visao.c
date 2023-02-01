@@ -119,8 +119,8 @@ int checkVision(scheduleListV *S){
             transaction=0;
         }
         
-        for (int i = 0; i <aux->totalOps; i++){
-            for (int j = i+1; j <aux->totalOps; j++){
+        for (int i = 0; i <=aux->totalOps; i++){
+            for (int j = i+1; j <=aux->totalOps; j++){
                 if(aux->ops[i].type == 'W' && aux->ops[j].type=='R'){
                     if((aux->ops[i].var == aux->ops[j].var) && (aux->ops[i].T->name != aux->ops[j].T->name)) {
                         checkPermutRuleTwo(aux, aux->ops[i],aux->ops[j]);
