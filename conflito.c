@@ -1,5 +1,7 @@
 #include "conflito.h"
 
+
+//Funcao de busca em profundidade em um grafo
 int DepthSearch(transaction *T){
     T->status=VISITED;
     for (int i = 0; i < T->n; i++){
@@ -16,6 +18,7 @@ int DepthSearch(transaction *T){
     return 1;
 }
 
+//Parte 1 da funcao de busca em profundidade em um grafo
 int detectCycle(schedule *S){
     for (int i = 0; i < S->totalT; i++){
         if(S->graph[i].status==INITIAL){
@@ -27,7 +30,9 @@ int detectCycle(schedule *S){
 }
 
 
+//Constroi as arestas do grafo seguindo as regras do algoritmo de conflito
 void buildEdges(schedule *S){
+    //Percorre contando a quantidade de arestas
     for (int i = 0; i <=S->totalOps; i++){
         for (int j = i+1; j <=S->totalOps; j++){
             if( (S->ops[i].type == 'W' && S->ops[j].type=='R') ||
@@ -39,9 +44,11 @@ void buildEdges(schedule *S){
                 }
         }
     }
+    //Reserva memoria
     for (int i = 0; i < S->totalT; i++){
         S->graph[i].adj = malloc(S->graph[i].n * sizeof(transaction));
     }
+    //Constroi as arestas de fato
     for (int i = 0; i <=S->totalOps; i++){
         for (int j = i+1; j <=S->totalOps; j++){
             if( (S->ops[i].type == 'W' && S->ops[j].type=='R') ||
@@ -56,6 +63,7 @@ void buildEdges(schedule *S){
     }
 }
 
+//Funcao meio gambiarra por problemas com ponteiro
 void edges(scheduleList *S){
     schedule *aux = S->first;
     while(aux){
@@ -65,6 +73,7 @@ void edges(scheduleList *S){
     
 }
 
+//Guardar os dados das transacoes no escalonamento
 void updateSchedule(scheduleList *S){
     schedule *aux = S->first;
     char line[1024];
@@ -94,7 +103,7 @@ void updateSchedule(scheduleList *S){
             aux->ops[totalOps].T=&(aux->graph[T-aux->firstT]);
             totalOps++;
         }
-        if(commits==bigT){
+        if(commits==bigT){ //Acabou os commits
             aux=aux->next;
             bigT=0;
             totalOps=0;
@@ -103,6 +112,7 @@ void updateSchedule(scheduleList *S){
     rewind(stdin);
 }
 
+//Confere o input
 void checkInput(scheduleList *S){
     schedule *aux;
     char line[1024];
@@ -111,8 +121,8 @@ void checkInput(scheduleList *S){
     int scheduleCommits=0; //Total de commits do schedule atual
     int commits=0;         //Total de commits de tudo
     int bigT=0; //Maior transaction
+    int smallT=10000; //Menor transaction
     int T=0;    //transaction
-    int firstT=0;
     int firstTime=0;
     char type;
     char var;
@@ -120,23 +130,25 @@ void checkInput(scheduleList *S){
         fgets(line,1000,stdin);
         sscanf(line,"%d %d %c %c",&time,&T,&type,&var);
         if(bigT==0){
-            firstT=T;
             firstTime=time;
         }
         if(T>bigT){
             bigT=T;
         }
+        if(T<smallT){
+            smallT=T;
+        }
         if(type=='C'){
             scheduleCommits++;
             commits++;
         }
-        if(commits==bigT){
+        if(commits==bigT){ //Acabou os commits
             S->total++;
             aux = malloc(sizeof(schedule));
             aux->next=NULL;
             aux->name=S->total;
-            aux->firstT=firstT;
-            aux->totalT=commits-firstT+1;
+            aux->firstT=smallT;
+            aux->totalT=scheduleCommits;
             aux->totalOps = time-scheduleCommits-firstTime+1; //FUNCIONA KKK
             aux->graph = malloc(aux->totalT * sizeof(transaction));
             aux->ops = malloc(aux->totalOps * sizeof(operations));
@@ -148,6 +160,7 @@ void checkInput(scheduleList *S){
                 S->last=aux;
             }
             bigT=0;
+            smallT = 10000;
             scheduleCommits=0;
         }
 
